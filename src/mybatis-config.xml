@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 加载数据库的xml，因为可能需要的不是mysql数据库，一个数据库一个<environment>标签，前面注意要默认一个environment> -->
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd"><!-- 文件编码规则与对应文件类型对应 -->
+<configuration>
+	<properties resource="jdbc.properties"><!-- 用于关联属性文件 -->
+			<property name="jdbc.username" value="root"/><!-- 设置属性文件中的值，如属性文件中已经写了则无需 -->
+			<property name="jdbc.password" value="root"/>
+	</properties>
+<!-- 文件体 -->
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC"/>
+			
+			<!-- 数据库基本信息 -->
+				<dataSource type="POOLED">
+					<!-- <property name="driver" value="com.mysql.jdbc.Driver"/>用了$符号来取文件中的值 -->
+					 <property name="driver" value="${jdbc.driver}"/>
+					<property name="url" value="${jdbc.url}"/>
+					<property name="username" value="${jdbc.username}"/>
+					<property name="password" value="${jdbc.password}"/>
+				</dataSource>
+		</environment>
+	</environments>
+	<mappers><!-- 链接其他xml文件 -->
+		<mapper resource="mapper/UserMapper.xml"/>
+	</mappers>
+</configuration>

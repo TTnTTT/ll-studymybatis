@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 编写数据库查询语句的xml,一条语句在mapper里写一个标签，注意标签要ID -->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.UserMapper">
+<!-- sql查询语句映射 -->
+<select id="selectUser" resultType="hashmap">
+select * from student
+</select>
+
+
+<select id="findUserByStuName" resultType="hashmap" parameterType="String"><!-- resultType返回值类型需要用自定义的类  -->
+select * from student where stuname=#{xx} <!-- 表示学生姓名来自一个变量xx可随便写，值直接从Java代码中来 -->
+</select>
+
+
+<!-- parameterType表示变量类型，多个参数时要写多个类型，所以做成自定义类User -->
+<select id="findUserByStuNameAndPassword" resultType="hashmap" parameterType="domain.Student">
+select * from student where stuname='${stuname}' and password='${password}'<!-- $符号需要用引号 -->
+</select>
+
+<update id="updateStudent" parameterType="String"><!-- 修改无返回值 -->
+update student set stuname=#{xx} where stuid=#{xx}
+</update>
+</mapper>
