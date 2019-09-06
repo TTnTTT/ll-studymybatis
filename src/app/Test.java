@@ -1,4 +1,4 @@
-package app;
+﻿package app;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -28,8 +28,10 @@ public class Test {
 				List<Map> list = sqlSession.selectList("findUserByStuName","马云");
 				//输出查询结果
 				for(Map map : list){
+
 					System.out.println(map);
 				}
+				System.out.println("你好，测试");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
