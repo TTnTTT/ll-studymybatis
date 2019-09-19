@@ -5,41 +5,87 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="mapper.UserMapper">
 <!-- sql查询语句映射 -->
-<select id="selectUser" resultType="hashmap">
+<select id="selectStudent" resultType="hashmap">
 select * from student
 </select>
 
-
-<select id="findUserByStuName" resultType="hashmap" parameterType="String"><!-- resultType返回值类型需要用自定义的类  -->
-select * from student where stuName=#{xx} <!-- 表示学生姓名来自一个变量xx可随便写，值直接从Java代码中来 -->
+<select id="findStudentByStuName" resultType="hashmap" parameterType="String">resultType返回值类型需要用自定义的类 
+select * from student where stuName=#{xx} 表示学生姓名来自一个变量xx可随便写，值直接从Java代码中来
 </select>
 
-
 <!-- parameterType表示参数类型，多个参数时要写多个类型，所以做成自定义类User -->
-<select id="findUserByStuNameAndPassword" resultType="hashmap" parameterType="domain.Student">
+<select id="findStudentByStuNameAndPassword" resultType="hashmap" parameterType="domain.Student">
 select * from student where stuName='${stuName}' and stuPassword='${stuPassword}'<!-- $符号需要用引号 -->
 </select>
 
 <!-- 返回类型改为domain.Student -->
-<select id="findUserByStudentinfo" resultType="domain.Student" parameterType="domain.Student">
+<select id="findStudentByStudentinfo" resultType="domain.Student" parameterType="domain.Student">
 select * from student where stuName='${stuName}' and stuPassword='${stuPassword}'<!-- $符号需要用引号 -->
 </select>
 <select id="selectOne" resultType="domain.Student" parameterType="domain.Student">
-select * from student where stuName='${stuName}' and stuPassword='${stuPassword}'<!-- $符号需要用引号 -->
+select * from student where stuName='${stuName}' and stuPassword='${stuPassword}'$符号需要用引号
 </select>
 
 <!-- 插入记录 -->
 <insert id="insertStudent" parameterType="domain.Student">
 insert into student(stuName,stuPassword) values(#{stuName},#{stuPassword})
-</insert>
+</insert> 
 
 <!-- 修改密码 -->
 <update id="updatePassword" parameterType="domain.Student"><!-- 修改无返回值 -->
-update student set stuPassword=#{stuPassword} where stuName=#{stuName}
+update student set stuPassword='${stuPassword}' where stuName='${stuName}'
 </update>
 
 <!-- 删除学生 -->
 <delete id="deleteStudent" parameterType="domain.Student">
 delete from student where stuName=#{stuName}
 </delete>
+
+<!-- 多对一联合查询 -->
+<select id="findAllStudent" resultMap="resultStudent"><!-- 组合要用resultMap，resultMap里面是组合类的id名 -->
+	select * from student,classs where student.classsNo=classs.classsNo
+</select>
+<resultMap type="domain.Student" id="resultStudent">
+	<result property="stuNo" column="stuNo"/> 
+	<result property="stuName" column="stuName"/>
+	<result property="stuPassword" column="stuPassword"/>
+	<association property="classsNo" column="classsNo" javaType="domain.Classs"><!-- 多对一关系标签association -->
+		<!-- <id property="classsNo" column="classsNo"/> --><!-- id标签标明是主键 -->
+		<!-- <result property="classsName" column="classsName"/> --> <!--默认用set方法传入-->
+		<!-- 还可以使用构造方法传入 -->
+		<constructor>
+			<arg column="classsNo" javaType="String"></arg>
+			<arg column="classsName" javaType="String"></arg>
+		</constructor>
+	</association>
+</resultMap>
+<!-- 分步查询 -->
+<resultMap type="domain.Student" id="resultStudent2">
+	<id property="stuNo" column="stuNo"/>
+	<result property="stuName" column="stuName"/>
+	<association property="classsNo" column="classsNo" javaType="domain.Classs" select="findOneClasssStudent">	
+	</association>
+</resultMap>
+<select id="findOneClasss" resultMap="resultStudent2" parameterType="domain.Student">
+	select * from student
+</select>
+<select id="findOneClasssStudent" resultType="domain.Classs" parameterType="domain.Classs">
+	select * from classs
+</select>
+
+
+<!-- 一对多联合查询 -->
+<resultMap id="resultClasss2" type="domain.Classs">
+	<id property="classsNo" column="classsNo"/>
+	<result property="classsName" column="classsName"/>
+	<collection property="students" column="student.stuName" javaType="ArrayList" ofType="domain.Student"><!-- 第三个属性stuNo，是一个集合 -->
+		<result property="stuName" column="stuName"/>
+		<result property="stuPassword" column="stuPassword"/>
+		<result property="classsNo" column="classsNo"/>
+	</collection>
+</resultMap>
+<select id="findClasssStudent" resultMap="resultClasss2">
+	select * from student,classs where classs.classsNo=student.classsNo
+</select>
+
 </mapper>
