@@ -9,9 +9,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 select * from student
 </select>
 
-<select id="findStudentByStuName" resultType="hashmap" parameterType="String">resultType返回值类型需要用自定义的类 
+<!-- <select id="findStudentByStuName" resultType="hashmap" parameterType="String">resultType返回值类型需要用自定义的类 
 select * from student where stuName=#{xx} 表示学生姓名来自一个变量xx可随便写，值直接从Java代码中来
-</select>
+</select> -->
 
 <!-- parameterType表示参数类型，多个参数时要写多个类型，所以做成自定义类User -->
 <select id="findStudentByStuNameAndPassword" resultType="hashmap" parameterType="domain.Student">
@@ -41,7 +41,7 @@ update student set stuPassword='${stuPassword}' where stuName='${stuName}'
 delete from student where stuName=#{stuName}
 </delete>
 
-<!-- 多对一联合查询 -->
+<!-- 多对一（一对一）关联-联合查询 -->
 <select id="findAllStudent" resultMap="resultStudent"><!-- 组合要用resultMap，resultMap里面是组合类的id名 -->
 	select * from student,classs where student.classsNo=classs.classsNo
 </select>
@@ -58,8 +58,16 @@ delete from student where stuName=#{stuName}
 			<arg column="classsName" javaType="String"></arg>
 		</constructor>
 	</association>
+	<discriminator javaType="int" column="sex">
+		<case value="0" resultType="domain.FeMaleStudent">
+			<result property="sex" column="sex"/>
+		</case>
+		<case value="1" resultType="domain.MaleStudent">
+			<result property="sex" column="sex"/>
+		</case>
+	</discriminator>
 </resultMap>
-<!-- 分步查询 -->
+<!-- 多对一分步查询 -->
 <resultMap type="domain.Student" id="resultStudent2">
 	<id property="stuNo" column="stuNo"/>
 	<result property="stuName" column="stuName"/>
@@ -75,17 +83,53 @@ delete from student where stuName=#{stuName}
 
 
 <!-- 一对多联合查询 -->
-<resultMap id="resultClasss2" type="domain.Classs">
+<!-- <resultMap id="resultClasss2" type="domain.Classs">
 	<id property="classsNo" column="classsNo"/>
 	<result property="classsName" column="classsName"/>
-	<collection property="students" column="student.stuName" javaType="ArrayList" ofType="domain.Student"><!-- 第三个属性stuNo，是一个集合 -->
+	<collection property="students" column="student.stuName" javaType="ArrayList" ofType="domain.Student">第三个属性stuNo，是一个集合
 		<result property="stuName" column="stuName"/>
 		<result property="stuPassword" column="stuPassword"/>
-		<result property="classsNo" column="classsNo"/>
 	</collection>
 </resultMap>
 <select id="findClasssStudent" resultMap="resultClasss2">
 	select * from student,classs where classs.classsNo=student.classsNo
+</select> -->
+<select id="selectOrders" resultMap="resultAll">
+select orders.id,employee.name,customer.name as cname,orders.ordertime,goods.name as gname,goods.price,orderdetail.amount,
+orderdetail.sum from orders,orderdetail,customer,goods,employee where orders.customerid=customer.id 
+and orders.employeeid=employee.id and orderdetail.orderid=orders.id and orderdetail.goodsid=goods.id
 </select>
-
+<resultMap id="resultAll" type="domain.Orders">
+	<id property="id" column="id"/>
+	<result property="ordertime" column="ordertime"/>
+	<association property="employee" column="id" javaType="domain.Employee"><!-- 多订单对一店家 -->
+		<result property="name" column="name"/>
+	</association>
+	<association property="customer" column="id" javaType="domain.Customer"><!-- 多订单对一顾客 -->
+		<result property="name" column="cname"/>
+	</association>
+	<collection property="orderdetails" javaType="Arraylist" column="orderdetail" ofType="domain.OrderDetail"><!-- 一订单多详情 -->
+		<result property="amount" column="amount"/>
+		<result property="sum" column="sum"/>
+		<collection property="goods" javaType="Arraylist" column="goods" ofType="domain.Goods"><!-- 一详情多商品 -->
+			<result property="name" column="gname"/>
+			<result property="price" column="price"/>
+		</collection>
+	</collection>
+</resultMap>
+<select id="findName" resultMap="findNameResult">
+	select student.stu_name,classs.classs_no,classs.classs_name
+	from student left join classs on student.classs_no=classs.classs_no
+	where stu_name in
+	<foreach item="item" collection="list" index="index" open="(" separator="," close=")">
+		#{item.stuName}
+	</foreach>	
+</select>
+<resultMap type="domain.Student" id="findNameResult">
+	<result property="stuName" column="stu_name"/>
+	<association property="classsNo" column="classs_no" javaType="domain.Classs">
+		<id property="classsNo" column="classs_no"/>
+		<result property="classsName" column="classs_name"/>
+	</association>
+</resultMap>
 </mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans 
+PUBLIC "-//SPRING/DTD BEAN/EN" 
+"http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="student1" class="domain.Student">
+		<property name="stuName" value="马云" />
+	</bean>
+	<bean id="student2" class="domain.Student">
+		<property name="stuName" value="马化腾" />
+	</bean>
+	<bean id="students" class="domain.Students">
+		<property name="students">
+			<list>
+				<ref bean="student1"/>
+				<ref bean="student2"/>
+			</list>
+		</property>
+	</bean>
+</beans>

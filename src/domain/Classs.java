@@ -5,7 +5,7 @@ import java.util.List;
 public class Classs {
 private String classsNo;
 private String classsName;
-List<Student> students;
+//List<Student> students;//一对多时
 
 public Classs() {
 	
@@ -33,12 +33,12 @@ public void setClassName(String classsName) {
 }
 
 
-public List<Student> getStudent() {
+/*public List<Student> getStudent() {
 	return students;
 }
 public void setStudent(List<Student> student) {
 	this.students = student;
-}
+}*/
 
 
 

@@ -8,16 +8,16 @@ public class Student {
 private String stuNo;//学号
 private String stuName;//学生姓名
 private String stuPassword;//学生密码
-int classsNo;//部门id,多个用户对应一个部门
+Classs classsNo;//班级id,多对一
 public Student() {
 	super();
 	// TODO Auto-generated constructor stub
 }
 
-public int getClasssNo() {
+public Classs getClasssNo() {
 	return classsNo;
 }
-public void setClasssNo(int classsNo) {
+public void setClasssNo(Classs classsNo) {
 	this.classsNo = classsNo;
 }
 public Student(String no,String stuPassword) {
